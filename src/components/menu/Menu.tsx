@@ -3,6 +3,8 @@ import MenuCard from "./MenuCard";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store";
 import { LoadingSkeleton } from "../LoadingSkeleton";
+import { onEntryChange } from "../../sdk/utils";
+
 // COMMENT: Uncomment below 2 import statements
 
 import { TMenu, TDishes } from "../../types";
@@ -19,8 +21,11 @@ const Menu: React.FC = () => {
     (state: RootState) => state.main.menuPageData
   );
   useEffect(() => {
-    fetchMenuPageData(dispatch, setLoading);
+    onEntryChange(() => {
+      fetchMenuPageData(dispatch, setLoading);
+    });
   }, [dispatch]);
+
 
   const memoizedMenuPageData = useMemo(() => menuPageData, [menuPageData]);
 

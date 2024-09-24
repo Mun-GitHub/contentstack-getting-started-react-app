@@ -1,4 +1,37 @@
 import Contentstack from "contentstack";
+import ContentstackLivePreview from "@contentstack/live-preview-utils";
+
+
+const getLivePreviewHostByRegion = (region: string) => {
+  switch (region) {
+    case "US":
+      return "rest-preview.contentstack.com";
+    case "EU":
+      return "eu-rest-preview.contentstack.com";
+    case "AZURE_NA":
+      return "azure-na-rest-preview.contentstack.com";
+    case "AZURE_EU":
+      return "azure-eu-rest-preview.contentstack.com";
+    default:
+      return "rest-preview.contentstack.com";
+  }
+};
+const getHostByRegion = (region: string) => {
+  switch (region) {
+    case "US":
+      return "app.contentstack.com";
+    case "EU":
+      return "eu-app.contentstack.com";
+    case "AZURE_NA":
+      return "azure-na-app.contentstack.com";
+    case "AZURE_EU":
+      return "azure-eu-app.contentstack.com";
+    case "GCP_NA":
+      return "gcp-na-api.contentstack.com";
+    default:
+      return "app.contentstack.com";
+  }
+};
 
 export const initializeContentstackSdk = () => {
   const {
@@ -6,6 +39,7 @@ export const initializeContentstackSdk = () => {
     REACT_APP_CONTENTSTACK_DELIVERY_TOKEN,
     REACT_APP_CONTENTSTACK_ENVIRONMENT,
     REACT_APP_CONTENTSTACK_REGION,
+    REACT_APP_CONTENTSTACK_PREVIEW_TOKEN
   } = process.env;
 
   const region: Contentstack.Region | undefined = (function (
@@ -39,6 +73,15 @@ export const initializeContentstackSdk = () => {
     delivery_token: REACT_APP_CONTENTSTACK_DELIVERY_TOKEN as string,
     environment: REACT_APP_CONTENTSTACK_ENVIRONMENT as string,
     region: region,
+    live_preview: {
+      enable: true,
+      host: getLivePreviewHostByRegion(REACT_APP_CONTENTSTACK_REGION as string),
+      preview_token: REACT_APP_CONTENTSTACK_PREVIEW_TOKEN as string
+    }
   });
+  ContentstackLivePreview.init({
+    stackSdk: Stack
+});
   return Stack;
 };
+export const onEntryChange = ContentstackLivePreview.onEntryChange;

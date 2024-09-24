@@ -9,14 +9,19 @@ import { fetchInitialData } from "../api";
 import { useDispatch } from "react-redux";
 import LoadingScreen from "../components/LoadingScreen";
 import { NotFound } from "../components/NotFound";
+import { onEntryChange } from "../sdk/utils";
+
 
 const AppRoutes: React.FC = () => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchInitialData(dispatch, setLoading);
+    onEntryChange(() => {
+      fetchInitialData(dispatch, setLoading);
+    });
   }, [dispatch]);
+
 
   return (
     <Router>
