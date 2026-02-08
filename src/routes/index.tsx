@@ -5,20 +5,24 @@ import Footer from "../components/footer/Footer";
 import Home from "../components/home/Home";
 import Menu from "../components/menu/Menu";
 import { fetchInitialData } from "../api";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../store";
 import LoadingScreen from "../components/LoadingScreen";
 import { NotFound } from "../components/NotFound";
 import { onEntryChange } from "../sdk/utils";
 
 const AppRoutes: React.FC = () => {
   const dispatch = useDispatch();
+  const locale = useSelector((state: RootState) => state.main.locale);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLoading(true);
+    fetchInitialData(dispatch, setLoading, locale);
     onEntryChange(() => {
-      fetchInitialData(dispatch, setLoading);
+      fetchInitialData(dispatch, setLoading, locale);
     });
-  }, [dispatch]);
+  }, [dispatch, locale]);
 
   return (
     <Router>

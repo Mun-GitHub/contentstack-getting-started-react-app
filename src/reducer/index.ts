@@ -1,7 +1,9 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { TFooterData, THeaderData, THomePageData, TMenu } from "../types";
+import { DEFAULT_LOCALE, LocaleCode } from "../constants";
 
 interface AppState {
+  locale: LocaleCode;
   headerData: THeaderData;
   footerData: TFooterData;
   homePageData: THomePageData;
@@ -9,6 +11,7 @@ interface AppState {
 }
 
 const initialState: AppState = {
+  locale: DEFAULT_LOCALE,
   headerData: {
     logo: {
       $: {
@@ -164,6 +167,9 @@ const mainSlice = createSlice({
   name: "main",
   initialState,
   reducers: {
+    setLocale: (state, action: PayloadAction<LocaleCode>) => {
+      state.locale = action.payload;
+    },
     setHeaderData: (state, action: PayloadAction<THeaderData>) => {
       state.headerData = action.payload;
     },
@@ -180,6 +186,7 @@ const mainSlice = createSlice({
 });
 
 export const {
+  setLocale,
   setHeaderData,
   setFooterData,
   setHomePageData,

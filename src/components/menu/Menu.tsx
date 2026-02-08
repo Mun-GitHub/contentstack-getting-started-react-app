@@ -9,6 +9,7 @@ import { onEntryChange } from "../../sdk/utils";
 
 const Menu: React.FC = () => {
   const dispatch = useDispatch();
+  const locale = useSelector((state: RootState) => state.main.locale);
   const [loading, setLoading] = useState(true);
   const [activeIndex, setActiveIndex] = useState<number>(0 ?? null);
 
@@ -16,10 +17,11 @@ const Menu: React.FC = () => {
     (state: RootState) => state.main.menuPageData
   );
   useEffect(() => {
+    setLoading(true);
     onEntryChange(() => {
-      fetchMenuPageData(dispatch, setLoading);
+      fetchMenuPageData(dispatch, setLoading, locale);
     });
-  }, [dispatch]);
+  }, [dispatch, locale]);
 
   const memoizedMenuPageData = useMemo(() => menuPageData, [menuPageData]);
 
