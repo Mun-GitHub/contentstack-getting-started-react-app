@@ -111,6 +111,9 @@ export type TDishes = {
     price: {
       "data-cslp": string;
     };
+    sale_price?: {
+      "data-cslp": string;
+    };
   };
   uid: string;
   image: {
@@ -124,6 +127,7 @@ export type TDishes = {
   title: string;
   description: string;
   price: number;
+  sale_price?: number;
 };
 
 export type TMenu = {

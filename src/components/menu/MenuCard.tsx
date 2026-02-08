@@ -6,7 +6,7 @@ const MenuCard: React.FC<{ data: TDishes[] }> = ({ data }) => {
     <div className="menu-card">
       {data ? (
         data.map((menuItem: TDishes) => (
-          <div className="menu-card-item">
+          <div className="menu-card-item" key={menuItem.uid}>
             <div
               {...menuItem.image.$.url}
               style={{
@@ -17,8 +17,19 @@ const MenuCard: React.FC<{ data: TDishes[] }> = ({ data }) => {
             ></div>
             <div className="item-content">
               <div className="item-content-text">
-                <span {...menuItem.$.price} className="price">
-                  ${menuItem.price}
+                <span className="price">
+                  {menuItem.sale_price != null ? (
+                    <>
+                      <span {...menuItem.$.price} style={{ textDecoration: "line-through", marginRight: "0.5rem" }}>
+                        ${menuItem.price}
+                      </span>
+                      <span {...(menuItem.$?.sale_price ?? {})} style={{ color: "#2D00FF", fontWeight: 600 }}>
+                        ${menuItem.sale_price}
+                      </span>
+                    </>
+                  ) : (
+                    <span {...menuItem.$.price}>${menuItem.price}</span>
+                  )}
                 </span>
                 <p {...menuItem.$.title}>{menuItem.title}</p>
                 <span {...menuItem.$.description} className="description">

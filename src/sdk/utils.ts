@@ -39,6 +39,7 @@ export const initializeContentstackSdk = () => {
     REACT_APP_CONTENTSTACK_ENVIRONMENT,
     REACT_APP_CONTENTSTACK_REGION,
     REACT_APP_CONTENTSTACK_PREVIEW_TOKEN,
+    REACT_APP_CONTENTSTACK_BRANCH
   } = process.env;
 
   const region: Contentstack.Region | undefined = (function (
@@ -71,6 +72,7 @@ export const initializeContentstackSdk = () => {
     api_key: REACT_APP_CONTENTSTACK_API_KEY as string,
     delivery_token: REACT_APP_CONTENTSTACK_DELIVERY_TOKEN as string,
     environment: REACT_APP_CONTENTSTACK_ENVIRONMENT as string,
+    branch: REACT_APP_CONTENTSTACK_BRANCH as string,
     region: region,
     live_preview: {
       enable: true,
