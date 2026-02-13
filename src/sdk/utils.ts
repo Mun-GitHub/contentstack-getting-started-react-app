@@ -1,8 +1,26 @@
 import Contentstack from "contentstack";
 import ContentstackLivePreview from "@contentstack/live-preview-utils";
 
+const NONPROD_HOST_ENVS = ["dev9", "dev14"] as const;
+
+/**
+ * Plugin to remove x-user-agent header for nonprod hosts (dev9, dev14) so CORS
+ * preflight succeeds when the server's Access-Control-Allow-Headers does not include it.
+ */
+const stripXUserAgentPlugin: Contentstack.ContentstackPlugin = {
+  onRequest(_stack, request) {
+    const opts = request.option as Record<string, unknown>;
+    const headers = opts?.headers as Record<string, string> | undefined;
+    if (headers && typeof headers === "object") {
+      delete headers["x-user-agent"];
+      delete headers["X-User-Agent"];
+    }
+    return request;
+  },
+};
+
 const getModifiedHost = (baseHost: string, hostEnv?: string) => {
-  if (hostEnv) {
+  if (hostEnv && NONPROD_HOST_ENVS.includes(hostEnv as (typeof NONPROD_HOST_ENVS)[number])) {
     const [subdomain] = baseHost.split(".");
     return `${hostEnv}-${subdomain}.csnonprod.com`;
   }
@@ -34,22 +52,22 @@ const getHostByRegion = (region: string, hostEnv?: string) => {
   let baseHost: string;
   switch (region) {
     case "US":
-      baseHost = "app.contentstack.com";
+      baseHost = "cdn.contentstack.io";
       break;
     case "EU":
-      baseHost = "eu-app.contentstack.com";
+      baseHost = "eu-cdn.contentstack.com";
       break;
     case "AZURE_NA":
-      baseHost = "azure-na-app.contentstack.com";
+      baseHost = "azure-na-cdn.contentstack.com";
       break;
     case "AZURE_EU":
-      baseHost = "azure-eu-app.contentstack.com";
+      baseHost = "azure-eu-cdn.contentstack.com";
       break;
     case "GCP_NA":
       baseHost = "gcp-na-api.contentstack.com";
       break;
-    default:
-      baseHost = "app.contentstack.com";
+    default:      
+      baseHost = "cdn.contentstack.io";
   }
   return getModifiedHost(baseHost, hostEnv);
 };
@@ -91,6 +109,10 @@ export const initializeContentstackSdk = () => {
     );
   }
 
+  const isNonprodHost =
+    REACT_APP_CONTENTSTACK_HOST_ENV &&
+    NONPROD_HOST_ENVS.includes(REACT_APP_CONTENTSTACK_HOST_ENV as (typeof NONPROD_HOST_ENVS)[number]);
+
   const Stack = Contentstack.Stack({
     api_key: REACT_APP_CONTENTSTACK_API_KEY as string,
     delivery_token: REACT_APP_CONTENTSTACK_DELIVERY_TOKEN as string,
@@ -99,9 +121,10 @@ export const initializeContentstackSdk = () => {
     region: region,
     live_preview: {
       enable: true,
-      host: getLivePreviewHostByRegion(REACT_APP_CONTENTSTACK_REGION as string,REACT_APP_CONTENTSTACK_HOST_ENV),
+      host: getLivePreviewHostByRegion(REACT_APP_CONTENTSTACK_REGION as string, REACT_APP_CONTENTSTACK_HOST_ENV),
       preview_token: REACT_APP_CONTENTSTACK_PREVIEW_TOKEN as string,
     },
+    ...(isNonprodHost && { plugins: [stripXUserAgentPlugin] }),
   });
 
   Stack.setHost(
